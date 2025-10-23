@@ -24,7 +24,7 @@ import getSVG, { svgHTML } from './svg'
 import getTimezone, { timezoneHTML } from './timezone'
 import { getTrash, trashHTML } from './trash'
 import { hashify, hashMini, getBotHash, getFuzzyHash, cipher } from './utils/crypto'
-// import { exile, getStackBytes, getTTFB, measure } from './utils/exile'
+import { exile, getStackBytes, getTTFB, measure } from './utils/exile'
 import { IS_BLINK, braveBrowser, getBraveMode, getBraveUnprotectedParameters, computeWindowsRelease, hashSlice, ENGINE_IDENTIFIER, getUserAgentRestored, attemptWindows11UserAgent, LowerEntropy, queueTask, Analysis } from './utils/helpers'
 // import { patch, html, getDiffs, modal, HTMLNote } from './utils/html'
 import getCanvasWebgl, { webglHTML } from './webgl'
@@ -65,7 +65,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	const braveFingerprintingBlocking = isBrave && (braveMode.standard || braveMode.strict)
 
 	const fingerprint = async () => {
-		// const timeStart = timer();
+		const timeStart = timer();
 		// const fingerprintTimeStart = timer();
 		const [
 			workerScopeComputed,
@@ -161,7 +161,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		}
 
 		// Hashing
-		// const hashStartTime = timer()
+		const hashStartTime = timer()
 		// @ts-ignore
 		const [
 			windowHash,
@@ -328,7 +328,7 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 		// console.log(performance.now()-start)
 		// const hashTimeEnd = hashStartTime()
-		// const timeEnd = timeStart()
+		const timeEnd = timeStart()
 
 		// console.log(`Hashing complete in ${(hashTimeEnd).toFixed(2)}ms`)
 
@@ -367,44 +367,58 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 		return {
 			fingerprint,
-			// styleSystemHash,
-			// styleHash,
-			// domRectHash,
-			// mimeTypesHash,
-			// canvas2dImageHash,
-			// canvasWebglImageHash,
-			// canvas2dPaintHash,
-			// canvas2dTextHash,
-			// canvas2dEmojiHash,
-			// canvasWebglParametersHash,
-			// deviceOfTimezoneHash,
-			// timeEnd,
+			styleSystemHash,
+			styleHash,
+			domRectHash,
+			mimeTypesHash,
+			canvas2dImageHash,
+			canvasWebglImageHash,
+			canvas2dPaintHash,
+			canvas2dTextHash,
+			canvas2dEmojiHash,
+			canvasWebglParametersHash,
+			deviceOfTimezoneHash,
+			timeEnd,
 		}
 	}
 
 	// fingerprint and render
-	const {
-			fingerprint: fp,
-			// styleSystemHash,
-			// styleHash,
-			// domRectHash,
-			// mimeTypesHash,
-			// canvas2dImageHash,
-			// canvas2dPaintHash,
-			// canvas2dTextHash,
-			// canvas2dEmojiHash,
-			// canvasWebglImageHash,
-			// canvasWebglParametersHash,
-			// deviceOfTimezoneHash,
-			// timeEnd,
-		} = await fingerprint().catch((error) => console.error(error));
+	// const f = await fingerprint().catch((error) => console.error(error));
+	// const {
+	// 		fingerprint: fp,
+	// 		// styleSystemHash,
+	// 		// styleHash,
+	// 		// domRectHash,
+	// 		// mimeTypesHash,
+	// 		// canvas2dImageHash,
+	// 		// canvas2dPaintHash,
+	// 		// canvas2dTextHash,
+	// 		// canvas2dEmojiHash,
+	// 		// canvasWebglImageHash,
+	// 		// canvasWebglParametersHash,
+	// 		// deviceOfTimezoneHash,
+	// 		// timeEnd,
+	// 	} = f;
 
-	window.__fp = {
-		trash: fp.trash ? fp.trash.trashBin.length : 0,
-		lies: fp.lies ? fp.lies.totalLies : 0,
-	};
+	// window.__fp = f;
+	// fingerprint()
+	// 	.then(console.log)
+	// 	.catch(console.log)
 
-	if (!fp) {
-		throw new Error('Fingerprint failed!')
-	}
+  const fp = await fingerprint();
+
+	const getFingerprint = () => fp;
+
+	window.f = getFingerprint;
+
+	setInterval(() => {
+		if (window.f !== getFingerprint) {
+			window.f = getFingerprint;
+			console.log('Restore function');
+		}
+	}, window.__fp_interval || 5000);
+
+	// if (!fp) {
+	// 	throw new Error('Fingerprint failed!')
+	// }
 }()

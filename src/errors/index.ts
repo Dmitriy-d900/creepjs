@@ -72,19 +72,19 @@ const caniuse = (fn, objChainList = [], args = [], method = false) => {
 }
 
 // Log performance time
-const timer = (logStart) => {
-	logStart && console.log(logStart)
+const timer = () => {
+	// logStart && console.log(logStart)
 	let start = 0
 	try {
 		start = performance.now()
 	} catch (error) {
 		captureError(error)
 	}
-	return (logEnd) => {
+	return () => {
 		let end = 0
 		try {
 			end = performance.now() - start
-			logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
+			// logEnd && console.log(`${logEnd}: ${end / 1000} seconds`)
 			return end
 		} catch (error) {
 			captureError(error)

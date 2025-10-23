@@ -28,7 +28,6 @@
     "url": "https://github.com/abrahamjuliot/CreepJS/issues"
   },
   "homepage": "https://github.com/abrahamjuliot/CreepJS#readme",
-  "dependencies": {},
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.3.3",
     "@typescript-eslint/eslint-plugin": "^5.30.7",
@@ -44,7 +43,6 @@
     "postcss": "^8.4.5",
     "postcss-cli": "^8.3.1",
     "rollup": "^2.77.0",
-    "terser": "^5.14.2",
     "typescript": "^4.7.4",
     "vite": "^7.0.2"
   }
