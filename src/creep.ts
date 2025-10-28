@@ -37,9 +37,8 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 
 	const scope = await spawnWorker()
 
-	if (scope == Scope.WORKER) {
-		return
-	}
+	if (scope == Scope.WORKER) return;
+	if ('WebGLCanvas' in window) return;
 
 	await queueTask()
 	// const stackBytes = getStackBytes()
@@ -338,31 +337,31 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 		}
 
 		const fingerprint = {
-			workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash},
-			navigator: !navigatorComputed ? undefined : {...navigatorComputed, $hash: navigatorHash},
-			windowFeatures: !windowFeaturesComputed ? undefined : {...windowFeaturesComputed, $hash: windowHash},
-			headless: !headlessComputed ? undefined : {...headlessComputed, $hash: headlessHash},
-			htmlElementVersion: !htmlElementVersionComputed ? undefined : {...htmlElementVersionComputed, $hash: htmlHash},
-			cssMedia: !cssMediaComputed ? undefined : {...cssMediaComputed, $hash: cssMediaHash},
-			css: !cssComputed ? undefined : {...cssComputed, $hash: cssHash},
-			screen: !screenComputed ? undefined : {...screenComputed, $hash: screenHash},
-			voices: !voicesComputed ? undefined : {...voicesComputed, $hash: voicesHash},
-			media: !mediaComputed ? undefined : {...mediaComputed, $hash: mediaHash},
-			canvas2d: !canvas2dComputed ? undefined : {...canvas2dComputed, $hash: canvas2dHash},
-			canvasWebgl: !canvasWebglComputed ? undefined : {...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash},
-			maths: !mathsComputed ? undefined : {...mathsComputed, $hash: mathsHash},
-			consoleErrors: !consoleErrorsComputed ? undefined : {...consoleErrorsComputed, $hash: consoleErrorsHash},
-			timezone: !timezoneComputed ? undefined : {...timezoneComputed, $hash: timezoneHash},
-			clientRects: !clientRectsComputed ? undefined : {...clientRectsComputed, $hash: rectsHash},
-			offlineAudioContext: !offlineAudioContextComputed ? undefined : {...offlineAudioContextComputed, $hash: audioHash},
-			fonts: !fontsComputed ? undefined : {...fontsComputed, $hash: fontsHash},
-			lies: !liesComputed ? undefined : {...liesComputed, $hash: liesHash},
-			trash: !trashComputed ? undefined : {...trashComputed, $hash: trashHash},
-			capturedErrors: !capturedErrorsComputed ? undefined : {...capturedErrorsComputed, $hash: errorsHash},
-			svg: !svgComputed ? undefined : {...svgComputed, $hash: svgHash },
-			resistance: !resistanceComputed ? undefined : {...resistanceComputed, $hash: resistanceHash},
-			intl: !intlComputed ? undefined : {...intlComputed, $hash: intlHash},
-			features: !featuresComputed ? undefined : {...featuresComputed, $hash: featuresHash},
+			workerScope: !workerScopeComputed ? undefined : { ...workerScopeComputed, $hash: workerHash },
+			navigator: !navigatorComputed ? undefined : { ...navigatorComputed, $hash: navigatorHash },
+			windowFeatures: !windowFeaturesComputed ? undefined : { ...windowFeaturesComputed, $hash: windowHash },
+			headless: !headlessComputed ? undefined : { ...headlessComputed, $hash: headlessHash },
+			htmlElementVersion: !htmlElementVersionComputed ? undefined : { ...htmlElementVersionComputed, $hash: htmlHash },
+			cssMedia: !cssMediaComputed ? undefined : { ...cssMediaComputed, $hash: cssMediaHash },
+			css: !cssComputed ? undefined : { ...cssComputed, $hash: cssHash },
+			screen: !screenComputed ? undefined : { ...screenComputed, $hash: screenHash },
+			voices: !voicesComputed ? undefined : { ...voicesComputed, $hash: voicesHash },
+			media: !mediaComputed ? undefined : { ...mediaComputed, $hash: mediaHash },
+			canvas2d: !canvas2dComputed ? undefined : { ...canvas2dComputed, $hash: canvas2dHash },
+			canvasWebgl: !canvasWebglComputed ? undefined : { ...canvasWebglComputed, pixels: pixelsHash, pixels2: pixels2Hash, $hash: canvasWebglHash },
+			maths: !mathsComputed ? undefined : { ...mathsComputed, $hash: mathsHash },
+			consoleErrors: !consoleErrorsComputed ? undefined : { ...consoleErrorsComputed, $hash: consoleErrorsHash },
+			timezone: !timezoneComputed ? undefined : { ...timezoneComputed, $hash: timezoneHash },
+			clientRects: !clientRectsComputed ? undefined : { ...clientRectsComputed, $hash: rectsHash },
+			offlineAudioContext: !offlineAudioContextComputed ? undefined : { ...offlineAudioContextComputed, $hash: audioHash },
+			fonts: !fontsComputed ? undefined : { ...fontsComputed, $hash: fontsHash },
+			lies: !liesComputed ? undefined : { ...liesComputed, $hash: liesHash },
+			trash: !trashComputed ? undefined : { ...trashComputed, $hash: trashHash },
+			capturedErrors: !capturedErrorsComputed ? undefined : { ...capturedErrorsComputed, $hash: errorsHash },
+			svg: !svgComputed ? undefined : { ...svgComputed, $hash: svgHash },
+			resistance: !resistanceComputed ? undefined : { ...resistanceComputed, $hash: resistanceHash },
+			intl: !intlComputed ? undefined : { ...intlComputed, $hash: intlHash },
+			features: !featuresComputed ? undefined : { ...featuresComputed, $hash: featuresHash },
 		}
 
 		return {
@@ -405,18 +404,45 @@ import getBestWorkerScope, { Scope, spawnWorker, workerScopeHTML } from './worke
 	// 	.then(console.log)
 	// 	.catch(console.log)
 
-  const fp = await fingerprint();
+	const fp = await fingerprint();
+	const normalizedFp = {
+		t: fp.fingerprint.trash.trashBin.length, // trash
+		l: fp.fingerprint.lies.totalLies, // lies
+		ce: fp.canvas2dEmojiHash, // canvas2dEmojiHash
+		ci: fp.canvas2dImageHash, // canvas2dImageHash
+		cp: fp.canvas2dPaintHash, // canvas2dPaintHash
+		ct: fp.canvas2dTextHash, // canvas2dTextHash
+		cwi: fp.canvasWebglImageHash, // canvasWebglImageHash
+		cwp: fp.canvasWebglParametersHash, // canvasWebglParametersHash
+		mt: fp.mimeTypesHash, // mimeTypesHash
+		s: fp.styleHash, // styleHash
+		ss: fp.styleSystemHash, // styleSystemHash
+		i: {
+			d: fp.fingerprint.navigator?.device, // device
+			u: fp.fingerprint.navigator?.userAgent, // userAgent
+			p: fp.fingerprint.navigator?.platform, // platform
+			w: fp.fingerprint.screen.width, // screen width
+			h: fp.fingerprint.screen.height, // screen height
+			t: fp.fingerprint.screen.touch, // is touch
+		},
+	};
 
-	const getFingerprint = () => fp;
+	function deepFreeze(o: Record<string, unknown>) {
+    if (o && typeof o === 'object') {
+      Object.freeze(o)
+      for (const k of Object.keys(o)) deepFreeze((o as any)[k])
+    }
+    return o
+	}
 
-	window.f = getFingerprint;
+	const freezedFp = deepFreeze(normalizedFp);
 
-	setInterval(() => {
-		if (window.f !== getFingerprint) {
-			window.f = getFingerprint;
-			console.log('Restore function');
-		}
-	}, window.__fp_interval || 5000);
+	Object.defineProperty(window, 'WebGLCanvas', {
+		value: freezedFp,
+		writable: false,
+		enumerable: true,
+		configurable: false,
+	});
 
 	// if (!fp) {
 	// 	throw new Error('Fingerprint failed!')
